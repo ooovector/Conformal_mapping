@@ -2,7 +2,7 @@ import numpy as np
 from scipy.constants import epsilon_0
 epsilon=11.75
 
-def Create_numerator_and_denumerator_points(points):
+def create_numerator_and_denumerator_points(points):
     '''
     This function helps find numerator and denumerator points
     '''
@@ -44,7 +44,8 @@ def Create_numerator_and_denumerator_points(points):
 
     return numerator_points, denumerator_points
 
-def Function_for_points(points):
+
+def function_for_points(points):
     '''
     This function create lists of points
     '''
@@ -70,7 +71,7 @@ def Function_for_points(points):
     return list_of_points
 
 
-def GaussChebyshev(numerator_points, denumerator_points, limits, n=100):
+def gauss_chebyshev(numerator_points, denumerator_points, limits, n=100):
     '''
     This function counts Gauss-Chebyshev integral
     '''
@@ -86,32 +87,27 @@ def GaussChebyshev(numerator_points, denumerator_points, limits, n=100):
             y *= -1j
     return np.sum(y)*np.pi/n
 
-class Conformal_mapping:
 
-    def __init__(self, _points):
+class ConformalMapping:
 
-        self._points=_points
+    def __init__(self, points):
 
-    def Give_me_result(self):
+        self.points=points
+
+    def cl(self):
         '''
         Main part
         '''
-        Points=self._points
-        Shape_of_matrix=(len(Points)-2)/2
-        print('Shape of matrix=', Shape_of_matrix)
+        shape_of_matrix=(len(self.points)-2)/2
+        print('Shape of matrix=', shape_of_matrix)
 
-        Numerator_points=Create_numerator_and_denumerator_points(Points)[0]
-        Denumerator_points=Create_numerator_and_denumerator_points(Points)[1]
+        numerator_points, denumerator_points = create_numerator_and_denumerator_points(self.points)
 
-        List_of_points=Function_for_points(Points)
+        list_of_points=Function_for_points(self.points)
 
-        Matrix_Phi=np.zeros((int(Shape_of_matrix), int(Shape_of_matrix)))
-        Matrix_Q=np.zeros((int(Shape_of_matrix), int(Shape_of_matrix)))
+        for i in range(int(shape_of_matrix)):
+            for j in range(int(shape_of_matrix)):
+                list_=Function_for_points(self.points)[i]
+                numerator_points, denumerator_points =create_numerator_and_denumerator_points(list_)
 
-        for i in range(int(Shape_of_matrix)):
-            for i in range(int(Shape_of_matrix)):
-                List=Function_for_points(Points)[i]
-                Numerator_points=Create_numerator_and_denumerator_points(List)[0]
-                Denumerator_points=Create_numerator_and_denumerator_points(List)[1]
-
-        return List_of_points
+        return list_of_points
