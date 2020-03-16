@@ -107,7 +107,7 @@ class ConformalMapping:
 
         for i in range(int(shape_of_matrix)):
             for j in range(int(shape_of_matrix)):
-                list_=Function_for_points(self.points)[i]
+                list_=function_for_points(self.points)[i]
                 numerator_points, denumerator_points =create_numerator_and_denumerator_points(list_)
 
         return list_of_points
