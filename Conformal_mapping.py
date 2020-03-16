@@ -129,6 +129,10 @@ class ConformalMapping:
         Q=np.zeros((int(shape_of_matrix), int(shape_of_matrix)))
 
         if shape_of_matrix > 1:
+
+        '''
+        This part makes Phi matrix
+        '''
             for i in range(int(shape_of_matrix)):
                 list_=function_for_points(self.points)[i]
                 numerator_points, denumerator_points =create_numerator_and_denumerator_points(list_)
@@ -147,6 +151,9 @@ class ConformalMapping:
 
                     print(Phi[j][i])
 
+        '''
+        This part makes Q matrix
+        '''
 
             for i in range(int(shape_of_matrix)):
                 list_=function_for_points(self.points)[i]
@@ -171,6 +178,7 @@ class ConformalMapping:
             C=epsilon_0*epsilon*Q*Phi_inv
 
         else:
+
 
             limits1=[denumerator_points[0], denumerator_points[1]]
 
