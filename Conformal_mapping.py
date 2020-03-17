@@ -79,11 +79,13 @@ def gauss_chebyshev(numerator_points, denumerator_points, limits, n=100):
     y = np.ones(x.shape, np.complex)
     for p in numerator_points:
         y *= np.sqrt(np.abs(x-p))
-        if x[0]<p:
+        if limits[0]<=p:
+            print ('rot -90')
             y *= 1j
     for p in denumerator_points:
         y /= np.sqrt(np.abs(x-p))
-        if x[0]<p:
+        if limits[0]<=p:
+            print ('rot 90')
             y *= -1j
     return np.sum(y)*np.pi/n
 
@@ -92,22 +94,63 @@ class ConformalMapping:
 
     def __init__(self, points):
 
-        self.points=points
+        self.points=np.asarray(points)
 
     def cl(self):
         '''
         Main part
         '''
-        shape_of_matrix=(len(self.points)-2)/2
+        shape_of_matrix=(len(self.points)-2)//2
         print('Shape of matrix=', shape_of_matrix)
 
-        numerator_points, denumerator_points = create_numerator_and_denumerator_points(self.points)
+        #numerator_points, denumerator_points = create_numerator_and_denumerator_points(self.points)
 
-        list_of_points=Function_for_points(self.points)
+        #list_of_points=function_for_points(self.points)
+        list_=function_for_points(self.points)
+        
+        numerator_point_ids = [p for p in np.arange(2, len(self.points)-3, 2)]
+        denumerator_point_ids = [p for p in np.arange(len(self.points)) if p not in numerator_point_ids]
+        
+        #print (numerator_point_ids, denumerator_point_ids)
+        
+        Q_mat = np.zeros(shape_of_matrix)
+        phi_mat = np.zeros(shape_of_matrix)
 
         for i in range(int(shape_of_matrix)):
-            for j in range(int(shape_of_matrix)):
-                list_=function_for_points(self.points)[i]
-                numerator_points, denumerator_points =create_numerator_and_denumerator_points(list_)
-
+            integrals = []
+            for j in range(len(self.points)-1):
+                a_id, b_id = j, j+1
+                
+                numerator_gc = [p for p in numerator_point_ids]
+                denumerator_gc = [p for p in denumerator_point_ids]
+                
+                if a_id in numerator_point_ids:
+                    numerator_gc.append(a_id)
+                else:
+                    denumerator_gc.remove(a_id)
+                    
+                if b_id in numerator_point_ids:
+                    numerator_gc.append(b_id)
+                else:
+                    denumerator_gc.remove(b_id)
+                
+                
+                numerator_gc_points = list_[i][numerator_gc]
+                denumerator_gc_points = list_[i][denumerator_gc]
+                limits = list_[i][[a_id, b_id]]
+                
+                integral = gauss_chebyshev(numerator_gc_points, denumerator_gc_points, limits)
+                
+                print (numerator_gc_points, denumerator_gc_points, limits)
+                integrals.append(integral)
+            transform = np.cumsum(integrals).tolist()
+            print (transform)
+            
+            potentials = np.imag(transform[:-1:2]-trans)
+            charges = np.real(integrals[1::2])
+            
+            #print (potentials, charges)
+            #phi_mat[:, i] = potentials
+            #Q_mat[:, i] = charges
+            
         return list_of_points
